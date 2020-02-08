@@ -202,12 +202,28 @@ ADC设置流程
 
 **设置ADC时钟**
 
+根据ADC转换速度需求，确定ADC的工作时钟，设定GLB模块的ADC时钟源和分频，结合gpadc_clk_div_ratio，确定最终ADC模块的工作时钟频率。
+
 **根据使用的通道设置GPIO**
 
+根据使用的模拟引脚，确定使用的通道号，初始化对应的GPIO为模拟功能，需要注意的是，在设定GPIO为模拟输入的时候，不要设置GPIO的上拉
+或者下拉，需要设置为浮空输入。
 
 **设定要转换的通道**
 
+根据使用的模拟通道和转换模式，设定对应的通道寄存器，对于单通道转换，在gpadc_pos_sel和gpadc_neg_sel寄存器中设置转换的通道信息。
+对于多通道扫描模式，根据要扫描通道数目和扫描顺序，设定gpadc_scan_length,gpadc_reg_scn_posX和gpadc_reg_scn_negX。
+
+**设定数据读取方式**
+
+根据ADC FIFO介绍的读取数据方式，选择使用的模式，设置对应的寄存器。如果使用DMA，同样需要配置DMA的一个通道，配合ADC FIFO完成数据的搬运。
+
 **启动转换**
+
+最后设置gpadc_res_sel选择数据转换结果的精度，最后设置gpadc_global_en=1，gpadc_conv_start=1就可以启动ADC开始转换。
+当转换完成，需要再次转换时，需要将gpadc_conv_start设置为0，再设置为1，以便再次触发转换。
+
+
 
 
 
