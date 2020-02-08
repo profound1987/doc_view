@@ -162,6 +162,11 @@ gpadc_res_sel控制位可以设定转换结果的位数为12位，14位，和16�
 在实际使用中，ADC的结果一般都是放入FIFO，这在多通道扫描模式下尤为重要，所以用户一般都是从ADC FIFO获取转换结果，
 ADC FIFO的数据格式gpadc_data_out寄存器中数据格式相同。
 
+ADC中断
+-------------
+ADC模块在正极采样饱和和负极采样饱和时可以产生中断，可以通过gpadc_pos_satur_mask，gpadc_neg_satur_mask屏蔽各自中断，
+当中断产生时，可以通过gpadc_pos_satur，和gpadc_neg_satur寄存器查询中断状态，同时可以通过gpadc_pos_satur_clr和gpadc_neg_satur_clr清除中断。该功能可以用来判断输入电压是否异常。
+
 ADC FIFO
 -------------
 
@@ -177,20 +182,19 @@ ADC模块拥有深度为32的FIFO，数据宽度为26Bits，当ADC完成转换�
 利用ADC的FIFO用户可以实现三种模式获取数据：查询模式，中断模式，DMA模式
 
 **查询模式**
+
 CPU轮询gpadc_rdy位，当该控制位置位时，说明FIFO中存在有效数据，CPU可以根据gpadc_fifo_data_count获知
 FIFO数据个数并从FIFO读出这些数据。
 
 **中断模式**
+
 CPU设置gpadc_rdy_mask为0，ADC就会在FIFO有数据推入的时候产生中断，用户可在中断函数中，根据gpadc_fifo_data_count获知
 FIFO数据个数并从FIFO读出这些数据，然后设置gpadc_rdy_clr清除中断。
 
 **DMA模式**
+
 用户设定gpadc_dma_en控制位，可以配合DMA完成转换数据到内存的搬运，在使用DMA模式时，通过gpadc_fifo_thl设置ADC FIFO发送
 DMA请求的数据个数阈值，DMA在收到请求时，会自动根据用户设定的参数，从FIFO搬运指定个数的结果到对应的内存。
-
-ADC中断
--------------
-ADC模块在正极采样饱和和负极采样饱和时可以产生中断，可以通过gpadc_pos_satur_mask，gpadc_neg_satur_mask屏蔽各自中断，当中断产生时，可以通过gpadc_pos_satur，和gpadc_neg_satur寄存器查询中断状态，同时可以通过gpadc_pos_satur_clr和gpadc_neg_satur_clr清除中断。该功能可以用来判断输入电压是否异常。
 
 
 ADC设置流程
